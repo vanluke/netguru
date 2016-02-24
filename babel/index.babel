@@ -1,0 +1,225 @@
+const assign = window.Object.assign;
+
+const wordApi = 'http://api.wordnik.com:80/v4/words.json/randomWord?hasDictionaryDef=false&minCorpusCount=0&maxCorpusCount=-1&minDictionaryCount=1&maxDictionaryCount=-1&minLength=11&maxLength=11&api_key=a2a73e7b926c924fad7001ca3111acd55af2ffabf50eb4ae5';
+
+const loseGif = 'http://i.giphy.com/10M2qmLfMSeOgE.gif';
+
+const winGif = 'http://i.giphy.com/iPTTjEt19igne.gif';
+
+const popup = $('#popup');
+
+const overlay = $('#overlay');
+
+const resetGameBtn = $('#reset-game');
+
+const hangmanIds = [
+  '#head',
+  '#neck',
+  '#corpus',
+  '#right-arm',
+  '#left-arm',
+  '#right-hand',
+  '#left-hand',
+  '#right-leg',
+  '#left-leg',
+  '#right-foot',
+  '#left-foot'
+];
+
+const gameSkeleton = {
+  counter: 0,
+  fails: 0,
+  word: '',
+  characters: [],
+  limit: 11
+};
+
+let game = assign({}, gameSkeleton);
+
+const timeoutToShowLastFoot = 100;
+
+const cleanGameObject = function() {
+  assign(game, gameSkeleton);
+};
+
+const cleanWrongLetters = () => {
+  for (let i = 0; i < game.limit; i++) {
+    $('.letters')
+      .find('.letter')
+      .find(`#letter-${i}`)
+      .text('');
+  }
+};
+
+const cleanHangman = () => {
+  for (let bodyElement of hangmanIds) {
+    $(bodyElement).css('visibility', 'hidden');
+  }
+};
+
+const cleanWinningBoxes = function() {
+  for (let index = 0; index < game.limit; index++) {
+    const resolveLetter = $('.resolve-items')
+      .find('.letters')
+      .find(`#letter-${index}`);
+
+    resolveLetter.text('');
+    $(resolveLetter).parent('div').removeClass('active');
+  }
+};
+const getWord = () => {
+  $.get(wordApi).done((response) => {
+    handleNewWord(response.word);
+  }).fail((error) => {});
+};
+
+const togglePopup = function(show) {
+  if (show === true) {
+    popup.show();
+    return;
+  }
+  popup.hide();
+};
+
+const setBackground = (win) => {
+  overlay
+    .find('#bg-image')
+    .css('background-image', `url(${!win ?   loseGif : winGif})`);
+};
+
+const handleWin = function() {
+  setBackground(true);
+  overlay.show();
+  $(popup)
+    .find('#message')
+    .text('You win!');
+};
+
+const handleLose = function() {
+  setBackground(false);
+  overlay.show();
+  $(popup)
+    .find('#message')
+    .text('You Lose!');
+};
+
+const putWrongLetter = (letter, index = 0) => {
+  $('.letters')
+    .find('.letter')
+    .find(`#letter-${index}`)
+    .text(letter);
+};
+
+const handleWrongLetter = (letter) => {
+  putWrongLetter(letter, game.fails);
+  $(hangmanIds[game.fails]).css('visibility', 'visible');
+  game.fails++;
+};
+
+const findLetterPossition = (letter) => game
+          .characters
+          .find((e) => e.selected === false && 
+  								e.letter.toLowerCase()
+                  === letter.toLowerCase());
+
+const markNewLetter = (letter) => {
+  const possition = findLetterPossition(letter);
+  if (possition) {
+    game.counter++;
+    possition.selected = true;
+    assign(game.characters, possition);
+    return possition.id;
+  }
+  return -1;
+};
+
+const mapGameWord = (word) => word.split('').map((e, i) => {
+    return {
+      id: i,
+      letter: e,
+      selected: false
+    };
+});
+
+const handleNewWord = (wordnik) => {
+  if (game.word === wordnik) {
+    getWord();
+    return;
+  }
+  game.word = wordnik;
+  game.characters = mapGameWord(game.word);
+};
+
+const putWordInPopup = (clean) => {
+  $(popup).find('#word').text(clean ? '' : game.word);
+};
+
+const play = (letter) => {
+  const index = markNewLetter(letter);
+  if (index >= 0) {
+    const resolveLetter = $('.resolve-items')
+      .find('.letters')
+      .find(`#letter-${index}`);
+    resolveLetter.text(letter);
+    $(resolveLetter).parent('div').addClass('active');
+  } else {
+    handleWrongLetter(letter);
+  }
+};
+
+const observeGame = (value) => {
+  const gameLocal = value[0];
+  if (!gameLocal || !gameLocal.object) {
+    return;
+  }
+  if (gameLocal.name === 'counter') {
+    if (gameLocal.object.counter >= game.limit) {
+      setTimeout(() => {
+        togglePopup(true);
+        putWordInPopup();
+        handleWin();
+      }, timeoutToShowLastFoot);
+    }
+  }
+  if (gameLocal.name === 'fails') {
+    if (gameLocal.object.fails >= game.limit) {
+      setTimeout(() => {
+        togglePopup(true);
+        putWordInPopup();
+        handleLose();
+      }, timeoutToShowLastFoot);
+    }
+  }
+};
+
+Object.observe(game, function(counterChanged, v, z) {
+  observeGame(counterChanged);
+});
+
+resetGameBtn.click((event) => {
+  event.preventDefault();
+  overlay.hide();
+  resetGame();
+});
+
+window.addEventListener('keypress', (event) => {
+  event = event || window.event;
+  event.preventDefault();
+  const keyCode = event.keyCode || event.which ;
+  if (!keyCode) {
+    return;
+  }
+  play(String.fromCharCode(keyCode));
+}, false);
+
+const resetGame = function() {
+  putWordInPopup(true);
+  togglePopup(false);
+  cleanWrongLetters();
+  cleanHangman();
+  cleanGameObject();
+  cleanWinningBoxes();
+  getWord();
+};
+
+resetGame();

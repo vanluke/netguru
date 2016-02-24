@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Hangmane - netguru</title>
+        <link rel="stylesheet" href="css/style.css">  
+  </head>
+  <body>
+    <div id="overlay">
+  <div id="bg-image">
+  </div>
+</div>
+<div id="popup">
+  <h1 id="word"></h1>
+  <h2 id="message"></h2>
+  <button id="reset-game" class="green">reset game</button>
+</div>
+<div class="container">
+  <div class="hangman">
+    <div class="missing-area">
+      <h3>You Missed:</h3>
+      <div class="letters">
+        <div class="letter"><span id="letter-0"></span></div>
+        <div class="letter"><span id="letter-1"></span></div>
+        <div class="letter"><span id="letter-2"></span></div>
+        <div class="letter"><span id="letter-3"></span></div>
+        <div class="letter"><span id="letter-4"></span></div>
+        <div class="letter"><span id="letter-5"></span></div>
+        <div class="letter"><span id="letter-6"></span></div>
+        <div class="letter"><span id="letter-7"></span></div>
+        <div class="letter"><span id="letter-8"></span></div>
+        <div class="letter"><span id="letter-9"></span></div>
+        <div class="letter"><span id="letter-10"></span></div>
+      </div>
+    </div>
+    <div class="man">
+      <div>
+        <img src="./assets/bar.png" id="bar" />
+      </div>
+      <div>
+        <img src="./assets/head.png" id="head" />
+      </div>
+      <div>
+        <img src="./assets/neck.png" id="neck" />
+      </div>
+      <div>
+        <div class="body">
+          <div class="corpus">
+            <div>
+              <img src="./assets/left-hand.png" id="left-hand" />
+            </div>
+            <div>
+              <img src="./assets/left-arm.png" id="left-arm" />
+            </div>
+            <div>
+              <img src="./assets/corpus.png" id="corpus" />
+            </div>
+            <div>
+              <img src="./assets/right-arm.png" id="right-arm" />
+            </div>
+            <div>
+              <img src="./assets/left-hand.png" id="right-hand" />
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="legs">
+        <div class="left">
+          <div>
+            <img src="./assets/left-leg.png" id="left-leg" />
+          </div>
+        </div>
+        <div class="right">
+          <div>
+            <img src="./assets/right-leg.png" id="right-leg" />
+          </div>
+        </div>
+      </div>
+      <div class="feet">
+        <div>
+          <img src="./assets/left-foot.png" id="left-foot" />
+          <img src="./assets/left-foot.png" id="right-foot" />
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="resolve-items">
+    <div class="letters"><span id="letter-0"></span></div>
+    <div class="letters"><span id="letter-1"></span></div>
+    <div class="letters"><span id="letter-2"></span></div>
+    <div class="letters"><span id="letter-3"></span></div>
+    <div class="letters"><span id="letter-4"></span></div>
+    <div class="letters"><span id="letter-5"></span></div>
+    <div class="letters"><span id="letter-6"></span></div>
+    <div class="letters"><span id="letter-7"></span></div>
+    <div class="letters"><span id="letter-8"></span></div>
+    <div class="letters"><span id="letter-9"></span></div>
+    <div class="letters"><span id="letter-10"></span></div>
+  </div>
+  <div class="bg-blue"></div>
+</div>
+    <script src='https://code.jquery.com/jquery-1.12.0.min.js'></script>
+    <script src="js/index.js"></script>
+  </body>
+</html>
