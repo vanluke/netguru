@@ -5,4 +5,6 @@
 	- flexbox
 	- sass (scss)
 
+# only for chrome
+
  
